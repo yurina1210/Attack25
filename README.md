@@ -3,7 +3,7 @@
 
 ## Requirements
 - Python3
-- pydub (for BGM)
+- pygame (for BGM)
 
 ## Information
 - If you need sound effects, make "bgms" directory and put audio files(mp3, mov, etc...) there.
