@@ -31,7 +31,6 @@ if you don't need BGM, ignore below.
 
 |key|mode|
 |:--|:--|
-
 |'m'|mistake BGM play|
 |'s'|success BGM play|
 |'S'|all BGM stop|
