@@ -12,7 +12,9 @@ usage:
     - ,: １つ前の状態に戻す
     - .: リセット
     - t: シンキングタイムBGM再生
-    - m: 不正解orお手つきBGM再生
+    - s: 正解BGM再生
+    - m: 不正解BGM再生
+    - S: 全BGM中断
 '''
 
 import socket
@@ -20,8 +22,8 @@ import tkinter as tk
 from tkinter import messagebox
 from time import sleep
 import os
-from pydub import AudioSegment
-from pydub.playback import play
+import threading
+import pygame
 
 # 表示サイズ
 PANEL_SIZE = 140
@@ -67,24 +69,21 @@ MARGIN_W = root.winfo_screenwidth() * (1. - PANEL_RATE_W) * 0.5
 MARGIN_H = root.winfo_screenheight() * (1. - PANEL_RATE_H) * 0.5
 CANVAS_SIZE = PANEL_W * PANEL_NUM  + MARGIN_W
 
-# 効果音読み込み
+# 効果音再生用ミキサー初期化
+pygame.mixer.pre_init(frequency=48000, size = -16, channels = 2, buffer = 1024*4)
+pygame.mixer.init()
+
+# パネル点灯BGMの読み込み
 sounds = []
+for i in range(teams.__len__()):
+    sounds.append(pygame.mixer.Sound('../bgms/' + str(i) + '.wav'))
 
-# 赤，緑，白，青のボタン押下時，パネル獲得時[0-3]
-for i in range(4):
-    sounds.append(AudioSegment.from_mp3(f'../bgms/'+str(i)+'_min.mov'))
+sounds.append(pygame.mixer.Sound('../bgms/attack_chance_bell.wav'))
+sounds.append(pygame.mixer.Sound('../bgms/attack_chance.wav'))
+sounds.append(pygame.mixer.Sound('../bgms/thinking.wav'))
+sounds.append(pygame.mixer.Sound('../bgms/success.wav'))
+sounds.append(pygame.mixer.Sound('../bgms/mistake.wav'))
 
-# アタックチャンスベル [4]
-sounds.append(AudioSegment.from_mp3(f'../bgms/attack_chance_bell.mov'))
-
-# アタックチャンス出題前デデン [5]
-sounds.append(AudioSegment.from_mp3(f'../bgms/attack_chance.mov'))
-
-# シンキングタイム[6]
-sounds.append(AudioSegment.from_mp3(f'../bgms/thinking.mp3'))
-
-# 不正解＆お手つき時
-sounds.append(AudioSegment.from_mp3(f'../bgms/mistake.mp3'))
 
 # 色選択
 colorselect = tk.IntVar()
@@ -210,23 +209,28 @@ panelcolor = {}
 panel_label = {}
 past_panelcolor = {}
 scores = [0 for i in range(teams.__len__())]
-is_attackchance = False
+is_attackchance_1 = False
+is_attackchance_2 = False
 
 SB_RATE_H = 0.6
 SB_RATE_W = 0.7
 SCORE_BOX_H = int(CANVAS_H * 0.9 * SB_RATE_H * 0.25)
 SCORE_BOX_W = int(CANVAS_W * 0.1 * SB_RATE_W)
 
+ip_adress = [
+    '192.168.0.3', #赤
+    '192.168.0.4', #緑
+    '192.168.0.5', #白
+    '192.168.0.6'  #青
+]
+fff = False # 早押し管理フラグ
+
 # 得点更新
-def rescore():
-    ip_adress = [
-        '192.168.0.3',
-        '192.168.0.4',
-        '192.168.0.5',
-        '192.168.0.6'
-    ]
+def rescore(event):
     sum_score = 0
-    for i in range(teams.__len__()):
+    fff = False
+    #for i in range(teams.__len__()):
+    for i in range(1):
         count = 0
         for j in range(panelcolor.__len__()):
             if panelcolor[j] == colors[i]:
@@ -239,19 +243,23 @@ def rescore():
         c0.create_rectangle(left_top_x, left_top_y + SCORE_BOX_H * i, left_top_x + SCORE_BOX_W, left_top_y + SCORE_BOX_H * i + SCORE_BOX_H, fill=colors[i], width=4)
         c0.create_text(int(left_top_x + SCORE_BOX_W * 0.5), int(left_top_y + SCORE_BOX_H * (i + 0.5)), text=count, font=TEXT_FONT, fill='black')
         
-        '''
+        # もしネットワーク通信による得点表示を使わない場合は以下をコメントアウトする
+        
         #サーバとの通信
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             # サーバを指定
-            s.connect((ip_adress[i], 50007))
-            #s.connect(('127.0.0.'+str(i+1), 50007))
+            #s.connect((ip_adress[i], 50007))
+            #s.connect(('127.0.0.1', 50007))
+            #s.connect(('192.168.0.8', 50007))
+            s.connect(('192.168.0.6', 50007))
             # サーバにメッセージを送る
-            num = str(count)
+            #num = str(count)
+            num = str(scores[i])
             s.sendall(num.encode('utf-8'))
             # ネットワークのバッファサイズは1024。サーバからの文字列を取得する
             data = s.recv(1024)
             print(repr(data))
-        '''
+        
         
     if sum_score == 20:
         toggle_attackchance(None)
@@ -266,7 +274,7 @@ def reset(event):
         panelcolor[n] = DEFAULT_COLOR
         panel_label[n] = c0.create_text(x+(PANEL_W/2),y+(PANEL_H/2),text=str(n+1),font=TEXT_FONT, activefill=ONCOLOR, tag='label')
 
-    rescore()
+    rescore(None)
 
 for n in range(PANEL_NUM ** 2):
         x = PANEL_W * (n%PANEL_NUM) + MARGIN_W
@@ -275,7 +283,7 @@ for n in range(PANEL_NUM ** 2):
         panelcolor[n] = DEFAULT_COLOR
         panel_label[n] = c0.create_text(x+(PANEL_W/2),y+(PANEL_H/2),text=str(n+1),font=TEXT_FONT, activefill=ONCOLOR, tag='label')
 
-rescore()
+rescore(None)
 
 # 選択したパネルのID取得
 def find_items(id, items):
@@ -335,33 +343,47 @@ def reverse(color, color_id):
         c0.itemconfigure(panels[i], tag="reverse")
         c0.itemconfigure("reverse", tag="filled", fill=color, activefill=color)
         c0.update()
-        play(sounds[color_id]) # 効果音再生
 
-    rescore()
+        sounds[color_id].play()
+        sleep(1)
+
+    rescore(None)
 
 # 塗り替え
 def change_color(event):
+    global is_attackchance_1
+    global is_attackchance_2
     reset_text(None)
     backup()
     color_id = colorselect.get()
+
+    sounds[color_id].play()
+
     aftercolor = colors[color_id]
     c0.itemconfigure('current', fill=aftercolor, tag='selected', activefill=aftercolor)
     c0.update()
-    play(sounds[color_id])
+
+    sleep(1)
+
     reverse(aftercolor, color_id)
+
+    if is_attackchance_1:
+        is_attackchance_1 = False
+        is_attackchance_2 = True
     
 # アタックチャンス
 def set_attackchance(event):
-    global is_attackchance
-    if is_attackchance:
+    global is_attackchance_1
+    global is_attackchance_2
+    if is_attackchance_2:
         backup()
         c0.itemconfigure('current', fill=ATTACK_CHANCE_COLOR, tag='attack', activefill=ATTACK_CHANCE_COLOR)
         attackpanelid = c0.find_withtag('attack')[0]
         attackpanelnum = find_items(attackpanelid, panels)
         panelcolor[attackpanelnum] = ATTACK_CHANCE_COLOR
-        rescore()
+        rescore(None)
         c0.itemconfigure('attack', tag='free')
-        is_attackchance = False
+        is_attackchance_2 = False
 
 c0.tag_bind('free', "<Button-1>", change_color)
 c0.tag_bind('filled', "<Button-1>", set_attackchance)
@@ -389,15 +411,16 @@ for i in range(teams.__len__()):
                                                                                                                                                                                                                                             
 # アタックチャンス
 def toggle_attackchance(event):
-    global is_attackchance
-    if is_attackchance:
-        is_attackchance = False
+    global is_attackchance_1
+    if is_attackchance_1:
+        is_attackchance_1 = False
     else:
         popup_attackchance()
-        is_attackchance = True
+        is_attackchance_1 = True
         
 def popup_attackchance():
-    play(sounds[4])
+    pygame.mixer.music.load('../bgms/attack_chance_bell.mp3')
+    pygame.mixer.music.play(1) # 効果音再生
     messagebox.showinfo("ATTACK CHANCE !", "ATTACK CHANCE !")
 
 # 一つ前に戻る
@@ -415,7 +438,7 @@ def back(event):
                 back_tag='free'
             c0.itemconfigure(panels[n], tag=back_tag, fill=past_panelcolor[n], activefill=back_activefill)
             panelcolor[n] = past_panelcolor[n]
-    rescore()
+    rescore(None)
 
 # バックアップをとる
 def backup():
@@ -438,12 +461,18 @@ def save_panel_num(event):
     event.widget.quit()
 
 def play_music(event):
-    if event.keysym == 't':
-        play(sounds[6])
-    elif event.keysym == 'A':
-        play(sounds[5])
-    else:
-        play(sounds[7])
+    if event.keysym == 'A':
+        sounds[5].play()
+    elif event.keysym == 't':
+        sounds[6].play()
+    elif event.keysym == 's':
+        sounds[7].play()
+    elif event.keysym == 'm':
+        sounds[8].play()
+
+def stop_music(event):
+    for s in sounds:
+        s.stop()
 
 # 'a'キー入力でアタックチャンス発動
 root.bind("<a>", toggle_attackchance)
@@ -453,16 +482,59 @@ root.bind("<,>", back)
 root.bind("<.>", reset)
 # 文字色リセットボタン
 root.bind("<c>", reset_text)
+# 早押しセッションリセットボタン
+root.bind("<q>", rescore)
 # アタックチャンス出題BGM
 root.bind("<A>", play_music)
 # シンキングタイムBGM
 root.bind("<t>", play_music)
-# 不正解＆お手つきBGM
+# 正解BGM
+root.bind("<s>", play_music)
+# 不正解BGM
 root.bind("<m>", play_music)
+# 全サウンド停止
+root.bind("<S>", stop_music)
 # フルスクリーン＆キーバインド
 root.overrideredirect(True)
 root.attributes('-fullscreen', True)
 root.attributes('-topmost', True)
 root.overrideredirect(False)
 root.bind("<Escape>", save_panel_num)
+
+
+
+# 別スレッドでメッセージの受信を行う関数
+def stand_by():
+    global fff
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sc:
+        #sc.bind(('192.168.0.2',50007))
+        sc.bind(('192.168.0.12',50007))
+        sc.listen(1)
+
+        while True:
+            conn,addr = sc.accept()
+            with conn:
+
+                while True:
+                    data = conn.recv(1024)
+                    if not data:
+                        break
+                    # 最も早い回答者IDを取得
+                    contestant_id = int(data.decode('utf-8'))
+
+                    print('Fastest ID :'+ contestant_id +',addr: {}',format(addr))
+                    if fff == False:
+                        fff = True
+                        judge = '1'
+                    else:
+                        judge = '0'
+                    conn.sendall(judge.encode('utf-8'))
+
+# 早押し機能を使わない場合以下2行をコメントアウト
+'''
+th = threading.Thread(name="stand_by", target=stand_by)
+th.start()
+'''
+
+
 root.mainloop()
