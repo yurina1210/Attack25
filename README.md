@@ -38,6 +38,5 @@ if you don't need BGM, ignore below.
 |'A'|attack chance question pre BGM play|
 
 ## Reference
-[Wikipedia](https://en.wikipedia.org/wiki/Panel_Quiz_Attack_25)
-
-[ポケットサウンド/効果音素材](https://pocket-se.info/)
+- [Wikipedia](https://en.wikipedia.org/wiki/Panel_Quiz_Attack_25)
+- [ポケットサウンド/効果音素材](https://pocket-se.info/)
