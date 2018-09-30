@@ -33,10 +33,12 @@ This mode needs rooter, main PC and 4 sub PCs.
 |'w'|white team mode|
 |'b'|blue team mode|
 |'a'|attack chance mode|
+|'q'|all sub PC's color painting reset|
+|'c'|suggest function cancel|
 |','|back 1 turn|
 |'.'|reset panels|
 
-if you don't need BGM, ignore below.
+About BGM
 
 |key|mode|
 |:--|:--|
