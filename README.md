@@ -7,7 +7,7 @@
 
 ## Notification
 - This program has 2 mode (1. Default mode, 2. Transition mode)
-- Default mode is non-transition mode (line. 243 - 258 is comment outed in "main.py").
+- Default mode is non-transition mode (line. 243 - 258 is commented out in "main.py").
 - If you change to transition mode, cancel line. 243 - 258 's comment.
 
 ## Usage
