@@ -115,10 +115,10 @@ def print_num():
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         
         #4台のPCと実際に通信するとき
-        #s.bind((team_ip, 50007))
+        s.bind((team_ip, 50007))
 
         #ローカルでテストする場合
-        s.bind(('127.0.0.1',50007))
+        #s.bind(('127.0.0.1',50007))
 
         #テスト用
         #s.bind(('192.168.0.8', 50007))
