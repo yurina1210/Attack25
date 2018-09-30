@@ -19,6 +19,7 @@
     5. `python3 film_quiz.py`
 
 2. Transition mode
+This mode needs rooter, main PC and 4 sub PCs.
     1. On rooter, setting each IP Address (e.g. rooter: `192.168.0.1`, main PC: `192.168.0.2`, sub PC: `192.168.0.3` - `192.168.0.6`)
     2. On sub terminal, `python3 sub.py`
     3. On main terminal, `python3 main.py`
