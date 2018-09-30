@@ -8,7 +8,6 @@ usage:
     - w: 白色を選択
     - b: 青色を選択
     - a: アタックチャンスモード
-    - A: アタックチャンス出題BGM再生
     - ,: １つ前の状態に戻す
     - .: リセット
     - t: シンキングタイムBGM再生
@@ -75,14 +74,11 @@ pygame.mixer.init()
 
 # パネル点灯BGMの読み込み
 sounds = []
-for i in range(teams.__len__()):
-    sounds.append(pygame.mixer.Sound('../bgms/' + str(i) + '.wav'))
-
-sounds.append(pygame.mixer.Sound('../bgms/attack_chance_bell.wav'))
-sounds.append(pygame.mixer.Sound('../bgms/attack_chance.wav'))
-sounds.append(pygame.mixer.Sound('../bgms/thinking.wav'))
-sounds.append(pygame.mixer.Sound('../bgms/success.wav'))
-sounds.append(pygame.mixer.Sound('../bgms/mistake.wav'))
+sounds.append(pygame.mixer.Sound('../sounds/hayaoshi.wav'))
+sounds.append(pygame.mixer.Sound('../sounds/gong.wav'))
+sounds.append(pygame.mixer.Sound('../sounds/thinking.wav'))
+sounds.append(pygame.mixer.Sound('../sounds/success.wav'))
+sounds.append(pygame.mixer.Sound('../sounds/mistake.wav'))
 
 
 # 色選択
@@ -229,8 +225,8 @@ fff = False # 早押し管理フラグ
 def rescore(event):
     sum_score = 0
     fff = False
-    #for i in range(teams.__len__()):
-    for i in range(1):
+    for i in range(teams.__len__()):
+    #for i in range(1):
         count = 0
         for j in range(panelcolor.__len__()):
             if panelcolor[j] == colors[i]:
@@ -244,7 +240,7 @@ def rescore(event):
         c0.create_text(int(left_top_x + SCORE_BOX_W * 0.5), int(left_top_y + SCORE_BOX_H * (i + 0.5)), text=count, font=TEXT_FONT, fill='black')
         
         # もしネットワーク通信による得点表示を使わない場合は以下をコメントアウトする
-        
+        '''
         #サーバとの通信
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             # サーバを指定
@@ -259,7 +255,7 @@ def rescore(event):
             # ネットワークのバッファサイズは1024。サーバからの文字列を取得する
             data = s.recv(1024)
             print(repr(data))
-        
+        '''
         
     if sum_score == 20:
         toggle_attackchance(None)
@@ -344,7 +340,7 @@ def reverse(color, color_id):
         c0.itemconfigure("reverse", tag="filled", fill=color, activefill=color)
         c0.update()
 
-        sounds[color_id].play()
+        sounds[0].play()
         sleep(1)
 
     rescore(None)
@@ -357,7 +353,7 @@ def change_color(event):
     backup()
     color_id = colorselect.get()
 
-    sounds[color_id].play()
+    sounds[0].play()
 
     aftercolor = colors[color_id]
     c0.itemconfigure('current', fill=aftercolor, tag='selected', activefill=aftercolor)
@@ -419,8 +415,7 @@ def toggle_attackchance(event):
         is_attackchance_1 = True
         
 def popup_attackchance():
-    pygame.mixer.music.load('../bgms/attack_chance_bell.mp3')
-    pygame.mixer.music.play(1) # 効果音再生
+    sounds[1].play() # 効果音再生
     messagebox.showinfo("ATTACK CHANCE !", "ATTACK CHANCE !")
 
 # 一つ前に戻る
@@ -461,14 +456,12 @@ def save_panel_num(event):
     event.widget.quit()
 
 def play_music(event):
-    if event.keysym == 'A':
-        sounds[5].play()
-    elif event.keysym == 't':
-        sounds[6].play()
+    if event.keysym == 't':
+        sounds[2].play()
     elif event.keysym == 's':
-        sounds[7].play()
+        sounds[3].play()
     elif event.keysym == 'm':
-        sounds[8].play()
+        sounds[4].play()
 
 def stop_music(event):
     for s in sounds:
@@ -484,8 +477,6 @@ root.bind("<.>", reset)
 root.bind("<c>", reset_text)
 # 早押しセッションリセットボタン
 root.bind("<q>", rescore)
-# アタックチャンス出題BGM
-root.bind("<A>", play_music)
 # シンキングタイムBGM
 root.bind("<t>", play_music)
 # 正解BGM

@@ -5,8 +5,6 @@ import tkinter as tk
 import threading
 import pygame
 from PIL import Image, ImageTk
-# from pydub import AudioSegment
-# from pydub.playback import play
 
 # チームごとのデータ(色，IPアドレス，音声データ，etc...)
 colors = [
@@ -28,20 +26,15 @@ ip_adress = [
     '192.168.0.5', #白
     '192.168.0.6'  #青
 ]
-
-# bgm_paths = [
-#     '../bgms/0_min.mov',
-#     '../bgms/1_min.mov',
-#     '../bgms/2_min.mov',
-#     '../bgms/3_min.mov'
-# ]
-
+'''
+# チームごとに早押しBGMを変える場合
 bgm_paths = [
     '../bgms/0.mp3',
     '../bgms/1.mp3',
     '../bgms/2.mp3',
     '../bgms/3.mp3'
 ]
+'''
 
 # IPアドレスからチームカラーを決定
 ip = socket.gethostbyname(socket.gethostname())
@@ -52,7 +45,8 @@ for i in range(4):
         break
 
 team_color = colors[team_id]
-team_bgm = bgm_paths[team_id]
+#team_bgm = bgm_paths[team_id]
+team_bgm = "../sounds/hayaoshi.wav"
 team_ip = ip_adress[team_id]
 
 
@@ -60,15 +54,11 @@ team_ip = ip_adress[team_id]
 # 変数
 edge_wide = 40
 
-# ffmpegの設定
-# AudioSegment.converter = r"C:\Users\A-09\Desktop\attack25\src\ffmpeg.exe"
-# AudioSegment.ffmpeg = r"C:\Users\A-09\Desktop\attack25\src\ffmpeg.exe"
-
+# pygame初期化
 pygame.mixer.pre_init(48000,-16,2,1024)
 pygame.mixer.init()
 pygame.mixer.music.load(team_bgm)
 
-# bgm = AudioSegment.from_mp3(team_bgm)
 flag = False
 judge = 1
 score = str(0)
@@ -86,8 +76,8 @@ def fff(event):
     global flag
     global judge
 
-    # 早押し機能使わない場合以下をコメントアウト
     '''
+    # 早押し機能使わない場合以下をコメントアウト
     #サーバとの通信
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         # サーバを指定
@@ -110,7 +100,6 @@ def fff(event):
         root.canvas.create_text(int(window_w * 0.5), int(window_h * 0.5), text=int(score), font=TEXT_FONT, fill='white')
     
     pygame.mixer.music.play(1)
-#     play(bgm)
     
 
 
@@ -124,9 +113,15 @@ def print_num():
     global score
     global flag
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        
+        #4台のPCと実際に通信するとき
         #s.bind((team_ip, 50007))
-        #s.bind(('127.0.0.1',50007))
-        s.bind(('192.168.0.8', 50007))
+
+        #ローカルでテストする場合
+        s.bind(('127.0.0.1',50007))
+
+        #テスト用
+        #s.bind(('192.168.0.8', 50007))
         s.listen(1)
 
         while True:    
