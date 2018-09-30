@@ -35,7 +35,6 @@ if you don't need BGM, ignore below.
 |'s'|success BGM play|
 |'S'|all BGM stop|
 |'t'|thinking time BGM play|
-|'A'|attack chance question pre BGM play|
 
 ## Reference
 - [Wikipedia](https://en.wikipedia.org/wiki/Panel_Quiz_Attack_25)
