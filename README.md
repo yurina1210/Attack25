@@ -28,6 +28,7 @@ This mode needs rooter, main PC and 4 sub PCs.
 ## Key Bind
 |key|mode|
 |:--|:--|
+|'Esc'|quit program|
 |'r'|red team mode|
 |'g'|green team mode|
 |'w'|white team mode|
