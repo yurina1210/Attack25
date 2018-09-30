@@ -13,16 +13,16 @@
 ## Usage
 1. Default mode
     1. `python3 main.py`
-    2. press key "esc" => save panels information ./datas/chanp_panels*.txt & finish program
+    2. Press key "esc" => save panels information ./datas/chanp_panels*.txt & finish program
     3. `mkdir photos_for_film_quiz`
-    4. put photos there
+    4. Put photos there
     5. `python3 film_quiz.py`
 
 2. Transition mode
     1. On rooter, setting each IP Adress (e.g. rooter: 192.168.0.1, main PC: 192.168.0.2, sub PC: 192.168.0.3 - 192.168.0.6)
     2. On sub terminal, `python3 sub.py`
     3. On main terminal, `python3 main.py`
-    4. Later just like 1.3 - 1.5
+    4. Later just like 1.iii - 1.v
 
 ## Key Bind
 |key|mode|
