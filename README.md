@@ -3,7 +3,7 @@
 
 ## Requirements
 - Python3
-- pygame `pip3 install pygame`
+- pygame(`pip3 install pygame`)
 
 ## Notification
 - This program has 2 mode (1. Default mode, 2. Transition mode)
