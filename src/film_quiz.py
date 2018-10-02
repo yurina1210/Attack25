@@ -8,8 +8,7 @@ import numpy as np
 import threading
 import os
 from pathlib import Path
-from pydub import AudioSegment
-from pydub.playback import play
+import pygame
 
 # 表示サイズ
 PANEL_SIZE = 140
@@ -37,8 +36,11 @@ window_w, window_h = 0, 0
 panel_w, panel_h = 0, 0
 
 # 音声ファイルの読み込み
-bgm = AudioSegment.from_mp3(f'../bgms/film_quiz.mp3')
-length_seconds = bgm.duration_seconds
+pygame.mixer.pre_init(frequency=48000, size = -16, channels = 2, buffer = 1024*4)
+pygame.mixer.init()
+sound = pygame.mixer.Sound('../sounds/film_quiz.wav')
+length_seconds = sound.get_length()
+print(length_seconds , "s")
 
 # 画像ファイルの読み込み
 p = Path("../photo_for_film_quiz/")
@@ -87,8 +89,8 @@ class App:
         im = Image.open(img_paths[self.seq])
         self.photo = PIL.ImageTk.PhotoImage(image = im.resize((window_w, window_h)))
     
-        self.delay = int(length_seconds / num_of_frames * 1000.)
-        print(self.delay, "ms")
+        self.delay = int(length_seconds / num_of_frames * 1000)
+        print(self.delay, "s")
 
         # パネルの情報を読み込み
         for i in range(4):
@@ -130,7 +132,7 @@ class App:
             sleep(0.5)
             self.window.update()
 
-        th = threading.Thread(name="a", target=play, args=(bgm,))
+        th = threading.Thread(name="a", target=sound.play)
         th.start()
 
         # After it is called once, the update method will be automatically called every delay milliseconds
@@ -155,10 +157,8 @@ class App:
                     self.canvas.create_text(x+(panel_w/2),y+(panel_h/2),text=str(n+1),font=TEXT_FONT, tag='label')
         
         # Get a frame from the video source
-        if self.seq < num_of_frames:
+        if self.seq < num_of_frames-1:
             self.seq += 1
-        else:
-            quit()
 
         print("seq: ", self.seq, "num: ", num_of_frames)
 
