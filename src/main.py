@@ -259,7 +259,7 @@ def rescore(event):
             print(repr(data))
         '''
         
-    if sum_score == 20:
+    if sum_score == 20 and is_attackchance_2 == False:
         toggle_attackchance(None)
         
 
