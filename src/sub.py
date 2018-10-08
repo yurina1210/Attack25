@@ -10,7 +10,7 @@ from PIL import Image, ImageTk
 colors = [
     "#FF001c", # 1-red
     "#228b22", # 2-forestgreen
-    "#EEEEEE", # 3-white
+    "#FFFFFF", # 3-white
     "#1C6ECD", # 4-blue
     "#800080", # 5-purple
     "#ffa500", # 6-orange
@@ -97,7 +97,11 @@ def fff(event):
 
         root.canvas.delete('all')
         root.canvas.create_rectangle(0, 0 ,window_w, window_h, fill=team_color)
-        root.canvas.create_text(int(window_w * 0.5), int(window_h * 0.5), text=int(score), font=TEXT_FONT, fill='white')
+        if team_id == 2:
+            fill = 'black'
+        else:
+            fill = 'white'
+        root.canvas.create_text(int(window_w * 0.5), int(window_h * 0.5), text=int(score), font=TEXT_FONT, fill=fill)
     
     pygame.mixer.music.play(1)
     
