@@ -26,6 +26,8 @@ import os
 import threading
 import pygame
 
+print("動いてるよーーー")
+
 # 表示サイズ
 PANEL_SIZE = 140
 PANEL_NUM = 5
@@ -242,22 +244,22 @@ def rescore(event):
         c0.create_text(int(left_top_x + SCORE_BOX_W * 0.5), int(left_top_y + SCORE_BOX_H * (i + 0.5)), text=count, font=TEXT_FONT, fill='black')
         
         # もしネットワーク通信による得点表示を使わない場合は以下をコメントアウトする
-        '''
-        #サーバとの通信
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            # サーバを指定
-            #s.connect((ip_adress[i], 50007))
-            #s.connect(('127.0.0.1', 50007))
-            #s.connect(('192.168.0.8', 50007))
-            s.connect(('192.168.0.6', 50007))
-            # サーバにメッセージを送る
-            #num = str(count)
-            num = str(scores[i])
-            s.sendall(num.encode('utf-8'))
-            # ネットワークのバッファサイズは1024。サーバからの文字列を取得する
-            data = s.recv(1024)
-            print(repr(data))
-        '''
+        # '''
+        # #サーバとの通信
+        # with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        #     # サーバを指定
+        #     #s.connect((ip_adress[i], 50007))
+        #     #s.connect(('127.0.0.1', 50007))
+        #     #s.connect(('192.168.0.8', 50007))
+        #     s.connect(('192.168.0.6', 50007))
+        #     # サーバにメッセージを送る
+        #     #num = str(count)
+        #     num = str(scores[i])
+        #     s.sendall(num.encode('utf-8'))
+        #     # ネットワークのバッファサイズは1024。サーバからの文字列を取得する
+        #     data = s.recv(1024)
+        #     print(repr(data))
+        # '''
         
     if sum_score == 20 and is_attackchance_2 == False:
         toggle_attackchance(None)
